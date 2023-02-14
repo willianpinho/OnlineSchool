@@ -8,19 +8,48 @@
 import SwiftUI
 
 struct LessonsView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+    
+    @EnvironmentObject private var lessonsModel: LessonsModel
+    
+    private func populateLessons() async {
+        do {
+            try await lessonsModel.populateLessons()
+        } catch {
+            print(error)
         }
-        .padding()
+    }
+    var body: some View {
+        NavigationView {
+            List(lessonsModel.lessons) { lesson in
+                HStack {
+                    AsyncImage(url: lesson.thumbnail) { asyncImage in
+                        asyncImage
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 70)
+                            .cornerRadius(4)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(height: 70)
+                    
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(lesson.name)
+                            .fontWeight(.regular)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.5)
+                    }
+                }
+            }.task {
+                await populateLessons()
+            }
+            .navigationTitle("Lessons")
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        LessonsView()
+        LessonsView().environmentObject(LessonsModel(webservice: Webservice()))
     }
 }

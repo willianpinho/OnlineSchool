@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct OnlineSchoolApp: App {
+    
+    @StateObject private var lessonsModel = LessonsModel(webservice: Webservice())
+    
     var body: some Scene {
         WindowGroup {
-            LessonsView()
+            LessonsView().environmentObject(lessonsModel)
         }
     }
 }
