@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FF828F72299BCEA3008D7E9E /* OnlineSchoolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828F71299BCEA3008D7E9E /* OnlineSchoolApp.swift */; };
-		FF828F74299BCEA3008D7E9E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828F73299BCEA3008D7E9E /* ContentView.swift */; };
+		FF828F74299BCEA3008D7E9E /* LessonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828F73299BCEA3008D7E9E /* LessonsView.swift */; };
 		FF828F76299BCEA6008D7E9E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF828F75299BCEA6008D7E9E /* Assets.xcassets */; };
 		FF828F79299BCEA6008D7E9E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF828F78299BCEA6008D7E9E /* Preview Assets.xcassets */; };
 		FF828F83299BCEA6008D7E9E /* OnlineSchoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828F82299BCEA6008D7E9E /* OnlineSchoolTests.swift */; };
@@ -36,7 +36,7 @@
 /* Begin PBXFileReference section */
 		FF828F6E299BCEA3008D7E9E /* OnlineSchool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnlineSchool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF828F71299BCEA3008D7E9E /* OnlineSchoolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineSchoolApp.swift; sourceTree = "<group>"; };
-		FF828F73299BCEA3008D7E9E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FF828F73299BCEA3008D7E9E /* LessonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonsView.swift; sourceTree = "<group>"; };
 		FF828F75299BCEA6008D7E9E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FF828F78299BCEA6008D7E9E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FF828F7E299BCEA6008D7E9E /* OnlineSchoolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OnlineSchoolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,7 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				FF828F71299BCEA3008D7E9E /* OnlineSchoolApp.swift */,
-				FF828F73299BCEA3008D7E9E /* ContentView.swift */,
+				FF828F73299BCEA3008D7E9E /* LessonsView.swift */,
 				FF828F75299BCEA6008D7E9E /* Assets.xcassets */,
 				FF828F77299BCEA6008D7E9E /* Preview Content */,
 			);
@@ -257,7 +257,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF828F74299BCEA3008D7E9E /* ContentView.swift in Sources */,
+				FF828F74299BCEA3008D7E9E /* LessonsView.swift in Sources */,
 				FF828F72299BCEA3008D7E9E /* OnlineSchoolApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
