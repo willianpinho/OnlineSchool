@@ -17,6 +17,8 @@
 		FF828F9C299BD703008D7E9E /* Lesson.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828F9B299BD703008D7E9E /* Lesson.swift */; };
 		FF828FA0299C1F9E008D7E9E /* Webservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828F9F299C1F9E008D7E9E /* Webservice.swift */; };
 		FF828FA2299C219A008D7E9E /* LessonsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828FA1299C219A008D7E9E /* LessonsModel.swift */; };
+		FF828FA9299C2D7E008D7E9E /* LessonDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828FA8299C2D7E008D7E9E /* LessonDetailViewController.swift */; };
+		FF828FAC299D17DC008D7E9E /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF828FAB299D17DC008D7E9E /* Collection+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		FF828F9F299C1F9E008D7E9E /* Webservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Webservice.swift; sourceTree = "<group>"; };
 		FF828FA1299C219A008D7E9E /* LessonsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonsModel.swift; sourceTree = "<group>"; };
 		FF828FA3299C27F3008D7E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FF828FA8299C2D7E008D7E9E /* LessonDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonDetailViewController.swift; sourceTree = "<group>"; };
+		FF828FAB299D17DC008D7E9E /* Collection+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,12 +105,14 @@
 		FF828F70299BCEA3008D7E9E /* OnlineSchool */ = {
 			isa = PBXGroup;
 			children = (
-				FF828FA3299C27F3008D7E9E /* Info.plist */,
+				FF828FAA299D17C4008D7E9E /* Extensions */,
+				FF828FA7299C2D60008D7E9E /* Controllers */,
+				FF828FA4299C29D9008D7E9E /* Views */,
 				FF828F9E299C1F82008D7E9E /* Services */,
 				FF828F9D299C1F03008D7E9E /* Models */,
 				FF828F71299BCEA3008D7E9E /* OnlineSchoolApp.swift */,
-				FF828F73299BCEA3008D7E9E /* LessonsView.swift */,
 				FF828F75299BCEA6008D7E9E /* Assets.xcassets */,
+				FF828FA3299C27F3008D7E9E /* Info.plist */,
 				FF828F77299BCEA6008D7E9E /* Preview Content */,
 			);
 			path = OnlineSchool;
@@ -152,6 +158,30 @@
 				FF828F9F299C1F9E008D7E9E /* Webservice.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		FF828FA4299C29D9008D7E9E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FF828F73299BCEA3008D7E9E /* LessonsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FF828FA7299C2D60008D7E9E /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				FF828FA8299C2D7E008D7E9E /* LessonDetailViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		FF828FAA299D17C4008D7E9E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FF828FAB299D17DC008D7E9E /* Collection+Extensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -286,7 +316,9 @@
 			files = (
 				FF828F9C299BD703008D7E9E /* Lesson.swift in Sources */,
 				FF828F74299BCEA3008D7E9E /* LessonsView.swift in Sources */,
+				FF828FAC299D17DC008D7E9E /* Collection+Extensions.swift in Sources */,
 				FF828FA2299C219A008D7E9E /* LessonsModel.swift in Sources */,
+				FF828FA9299C2D7E008D7E9E /* LessonDetailViewController.swift in Sources */,
 				FF828F72299BCEA3008D7E9E /* OnlineSchoolApp.swift in Sources */,
 				FF828FA0299C1F9E008D7E9E /* Webservice.swift in Sources */,
 			);

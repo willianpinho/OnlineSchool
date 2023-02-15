@@ -24,7 +24,8 @@ class Webservice {
             throw NetworkError.badRequest
         }
         
-        let result = try JSONDecoder().decode(Lessons.self, from: data)
-        return result.lessons
+        let result = try JSONDecoder().decode([String: [Lesson]].self, from: data)
+        let lessons: [Lesson] = result["lessons"] ?? []
+        return lessons
     }
 }

@@ -7,11 +7,7 @@
 
 import Foundation
 
-struct Lessons: Codable {
-    let lessons : [Lesson]
-}
-
-struct Lesson: Codable, Identifiable {
+struct Lesson: Codable, Hashable, Identifiable {
     let id: Int
     let name: String
     let description: String
