@@ -10,6 +10,7 @@ import UIKit
 import SwiftUI
 import AVKit
 import AVFoundation
+import Reachability
 
 struct LessonDetailViewControllerWrapper: UIViewControllerRepresentable {
     typealias UIViewControllerType = LessonDetailViewController
@@ -70,25 +71,56 @@ class LessonDetailViewController: UIViewController {
         return button
     }()
     
+    private var downloadVideoSession: URLSession?
+    private var downloadTask: URLSessionDownloadTask?
+    private let downloadProgressView = UIProgressView()
+    private var downloadAlertView: UIAlertController?
+    private var folderDestinationUrl: URL?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        refreshView()
+    }
+    
+    func refreshView() {
         guard let currentLesson = lessons?[id] else { return }
         lesson = currentLesson
+        downloadVideoSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: OperationQueue())
+        folderDestinationUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("lesson-\(id).mp4")
         setupScrollView()
         setupChildViews()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        createDownloadButton()
+    }
+     
+    func createDownloadButton() {
+        let downloadButton = UIButton(frame: CGRect(x: 0, y: 0, width: 80, height: 30))
+        downloadButton.tintColor = .systemBlue
+        downloadButton.setTitleColor(.systemBlue, for: .normal)
+        
+        if downloadedVideo() {
+            downloadButton.setTitle("Downloaded", for: .normal)
+            downloadButton.setImage(UIImage(systemName: "icloud.and.arrow.up"), for: .normal)
+        } else {
+            downloadButton.setTitle("Download", for: .normal)
+            downloadButton.setImage(UIImage(systemName: "icloud.and.arrow.down"), for: .normal)
+        }
+        
+        downloadButton.addTarget(self, action: #selector(self.downloadVideo(_:)), for: .touchUpInside)
+        
+        self.navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(customView: downloadButton)
     }
     
-    private func setupScrollView() {        
+    private func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
-
+        
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
-
+        
         let safeArea = view.safeAreaLayoutGuide
         let scrollViewConstraints = [
             scrollView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
@@ -97,7 +129,7 @@ class LessonDetailViewController: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
         ]
         NSLayoutConstraint.activate(scrollViewConstraints)
-
+        
         let contentViewConstraints = [
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
@@ -131,7 +163,7 @@ class LessonDetailViewController: UIViewController {
             playButton.centerYAnchor.constraint(equalTo: thumbnailView.centerYAnchor)
         ]
         NSLayoutConstraint.activate(playButtonConstraints)
-
+        
         contentView.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -141,7 +173,7 @@ class LessonDetailViewController: UIViewController {
             nameLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8)
         ]
         NSLayoutConstraint.activate(nameLabelConstraints)
-
+        
         contentView.addSubview(descriptionLabel)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -151,7 +183,7 @@ class LessonDetailViewController: UIViewController {
             descriptionLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8)
         ]
         NSLayoutConstraint.activate(descriptionLabelConstraints)
-
+        
         currentLesson()
         
         guard let lessons = lessons, id < lessons.count - 1 else {
@@ -160,7 +192,7 @@ class LessonDetailViewController: UIViewController {
             nextLessonButton.removeFromSuperview()
             return
         }
-
+        
         nextLessonButton.addTarget(self, action: #selector(self.nextLesson), for: .touchUpInside)
         contentView.addSubview(nextLessonButton)
         nextLessonButton.translatesAutoresizingMaskIntoConstraints = false
@@ -188,7 +220,6 @@ class LessonDetailViewController: UIViewController {
             }
         }
         guard let lessons = lessons, let currentLesson = lessons[safe: id] else { return }
-
         nameLabel.text = currentLesson.name
         descriptionLabel.text = currentLesson.description
         nextLessonButton.isHidden = (id == lessons.count - 1)
@@ -196,12 +227,21 @@ class LessonDetailViewController: UIViewController {
     
     @objc func playMovie(sender : UIButton) {
         guard let currentLesson = lessons?[id] else { return }
-
-        let player = AVPlayer(url: currentLesson.videoURL)
+        var player = AVPlayer()
+        NetworkManager.isReachable { nw in
+            player = AVPlayer(url: currentLesson.videoURL)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.present(playerViewController, animated: true) { playerViewController.player?.play() }
+        }
         
-        let playerViewController = AVPlayerViewController()
-        playerViewController.player = player
-        self.present(playerViewController, animated: true) { playerViewController.player?.play() }
+        NetworkManager.isUnreachable { nw in
+            let playerItem = AVPlayerItem(url: self.folderDestinationUrl!)
+            let player = AVPlayer(playerItem: playerItem)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.present(playerViewController, animated: true) { playerViewController.player?.play() }
+        }
     }
     
     @objc func nextLesson(sender : UIButton) {
@@ -213,5 +253,76 @@ class LessonDetailViewController: UIViewController {
         lesson = lessons[id]
         currentLesson()
         id += 1
+
+        let viewcontroller = LessonDetailViewController()
+        viewcontroller.id = id
+        viewcontroller.lessons = lessons
+        
+        self.navigationController?.pushViewController(viewcontroller, animated: false)
+    }
+    
+    @objc func downloadVideo(_ sender: Any?) {
+        
+        if(downloadedVideo()){
+            let alert = UIAlertController(title: "Alert", message: "You already downloaded", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
+        else{
+            NetworkManager.isReachable { nw in
+                let videoUrl = self.lesson!.videoURL
+                
+                self.downloadTask = self.downloadVideoSession!.downloadTask(with: videoUrl)
+                self.downloadTask!.resume()
+                self.downloadAlertView = UIAlertController(title: "Download Video\n", message: nil, preferredStyle: .alert)
+                self.downloadAlertView!.addAction(UIAlertAction(title: "Cancel download", style: .cancel, handler: { [self] action in
+                    downloadTask!.cancel()
+                }))
+                
+                self.present(self.downloadAlertView!, animated: true, completion: { [self] in
+                    let margin:CGFloat = 8.0
+                    let rect = CGRect(x: margin, y: 60.0, width: downloadAlertView!.view.frame.width - margin * 2.0 , height: 22.0)
+                    downloadProgressView.frame = rect
+                    downloadProgressView.progress = 0.0
+                    downloadProgressView.tintColor = .systemBlue
+                    downloadAlertView!.view.addSubview(downloadProgressView)
+                })
+            }
+            
+            NetworkManager.isUnreachable { nw in
+                let alert = UIAlertController(title: "Alert", message: "You can't download. Please check your network.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func downloadedVideo() -> Bool {
+        return FileManager().fileExists(atPath: folderDestinationUrl!.path)
+    }
+}
+
+extension LessonDetailViewController: URLSessionDownloadDelegate{
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        do {
+            try FileManager.default.moveItem(at: location, to: folderDestinationUrl!)
+            
+            DispatchQueue.main.async {
+                self.downloadAlertView?.dismiss(animated: true)
+                
+                let alert = UIAlertController(title: "Alert", message: "Download Completed", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true)
+            }
+        } catch {
+            fatalError("Couldn't move item to destination: \(error.localizedDescription)")
+        }
+    }
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        let percentDownloaded = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        DispatchQueue.main.async { [self] in
+            downloadProgressView.progress = Float(percentDownloaded)
+        }
     }
 }

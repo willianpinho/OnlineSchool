@@ -6,18 +6,16 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct LessonsView: View {
     
     @EnvironmentObject private var lessonsModel: LessonsModel
     @State var lessons: [Lesson] = []
     
-    private func populateLessons() async {
-        do {
-            try await lessonsModel.populateLessons()
-            lessons = lessonsModel.lessons
-        } catch {
-            print(error)
+    private func populateLessons()  {
+        lessonsModel.populateLessons { lessons in
+            self.lessons = lessons
         }
     }
     var body: some View {
@@ -26,7 +24,7 @@ struct LessonsView: View {
                 ForEach(Array(lessons.enumerated()), id: \.offset) { index, lesson in
                     NavigationLink(destination: LessonDetailViewControllerWrapper(id: index, lessons: lessons)) {
                         HStack {
-                            AsyncImage(url: lesson.thumbnail) { asyncImage in
+                            CachedAsyncImage(url: lesson.thumbnail) { asyncImage in
                                 asyncImage
                                     .resizable()
                                     .scaledToFit()
@@ -49,7 +47,7 @@ struct LessonsView: View {
                     
                 }
             }.task {
-                await populateLessons()
+                populateLessons()
             }
             .navigationTitle("Lessons")
         }

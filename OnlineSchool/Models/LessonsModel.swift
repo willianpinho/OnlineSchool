@@ -6,17 +6,21 @@
 //
 
 import Foundation
+import CoreData
 
 @MainActor
-class LessonsModel: ObservableObject {
+class LessonsModel: NSObject, ObservableObject {
     let webservice: Webservice
     @Published var lessons: [Lesson] = []
     
     init(webservice: Webservice) {
         self.webservice = webservice
+        super.init()
     }
-    
-    func populateLessons() async throws {
-        lessons = try await webservice.getLessons()
+        
+    func populateLessons(completion: @escaping ([Lesson]) -> ()) {
+        webservice.getLessons { lessons in
+            completion(lessons)
+        }
     }
 }

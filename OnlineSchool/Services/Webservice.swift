@@ -13,19 +13,39 @@ enum NetworkError: Error {
 }
 class Webservice {
     
-    func getLessons() async throws -> [Lesson] {
+    func getLessons(completion: @escaping ([Lesson]) -> ()) {
         guard let url = URL(string: "https://iphonephotographyschool.com/test-api/lessons") else {
-            throw NetworkError.badURL
+            return
         }
         
-        let (data, response) = try await URLSession.shared.data(from: url)
+        let request = URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.returnCacheDataElseLoad, timeoutInterval: 60.0)
         
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw NetworkError.badRequest
+        if let data = URLCache.shared.cachedResponse(for: request)?.data {
+            if let decoder = try? JSONDecoder().decode([String: [Lesson]].self, from: data) {
+                let lessons : [Lesson] = decoder["lessons"] ?? []
+                DispatchQueue.main.async {
+                    completion(lessons)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    completion([])
+                }
+            }
+        } else {
+            URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+                if let data = data,
+                   let decoder = try? JSONDecoder().decode([String:[Lesson]].self, from: data)
+                {
+                    let lessons : [Lesson] = decoder["lessons"] ?? []
+                    DispatchQueue.main.async {
+                        completion(lessons)
+                    }
+                }else{
+                    DispatchQueue.main.async {
+                        completion([])
+                    }
+                }
+            }).resume()
         }
-        
-        let result = try JSONDecoder().decode([String: [Lesson]].self, from: data)
-        let lessons: [Lesson] = result["lessons"] ?? []
-        return lessons
     }
 }
