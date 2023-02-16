@@ -7,10 +7,6 @@
 
 import Foundation
 
-enum NetworkError: Error {
-    case badURL
-    case badRequest
-}
 class Webservice {
     
     func getLessons(completion: @escaping ([Lesson]) -> ()) {

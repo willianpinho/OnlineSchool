@@ -9,28 +9,55 @@ import XCTest
 @testable import OnlineSchool
 
 final class OnlineSchoolTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    var networkManager: NetworkManager!
+    
+    func testLoadLessonsFromURL() async throws {
+        let url = URL(string: "https://iphonephotographyschool.com/test-api/lessons")!
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url, delegate: nil)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                XCTFail("Response is not of type HTTPURLResponse")
+                return
+            }
+            XCTAssertEqual(httpResponse.statusCode, 200, "Expected a 200 OK response.")
+            
+            let decoder = JSONDecoder()
+            let lessonResponse = try decoder.decode([String: [Lesson]].self, from: data)
+            let lessons = lessonResponse["lessons"] ?? []
+            XCTAssertEqual(lessons.count, 11, "Expected 11 lessons")
+            
+        } catch {
+            XCTFail("Error occured during the request: \(error.localizedDescription)")
         }
     }
-
+    
+    override func setUp() {
+        super.setUp()
+        networkManager = NetworkManager.sharedInstance
+    }
+    
+    override func tearDown() {
+        networkManager = nil
+        super.tearDown()
+    }
+    
+    func testIsReachable() {
+        let expectation = self.expectation(description: "Is reachable expectation")
+        NetworkManager.isReachable { (manager) in
+            XCTAssertEqual(manager, self.networkManager)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+    }
+    
+    func testIsReachableViaWiFi() {
+        let expectation = self.expectation(description: "Is reachable via WiFi expectation")
+        NetworkManager.isReachableViaWiFi { (manager) in
+            XCTAssertEqual(manager, self.networkManager)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+    }
 }
+
