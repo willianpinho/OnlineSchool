@@ -1,12 +1,12 @@
 # OnlineSchool
 
-## 👀  Assignment
+##  Assignment
 
 Create a tiny app from scratch where users can pick a lesson from a list and watch it in the details view. 
 
 Also they have to be able to download and watch the lesson when there's no internet connection.
 
-##Lessons list screen:
+## Lessons list screen:
 
 - Show title “Lessons”
 - Implement the lesson list screen using SwiftUI
@@ -24,5 +24,9 @@ Lesson details screen:
 - Show a “Next lesson” button to play next lesson from the list
 - Show video in full screen when app rotates to landscape
 
-Instalation
-Use XCode and download project with SPM
+## Instalation
+- Use XCode and download project with SPM
+
+## Used Libraries
+- Rechability - to know if we are connect in internet
+- CachedAsyncImage - to cache image in list of SwiftUI
